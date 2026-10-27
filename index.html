@@ -1,0 +1,761 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Тайна Осеннего зелья</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪄</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Philosopher:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0e1430; --bg2:#1c2456;
+  --gold:#e8c36a; --gold2:#a87f2a;
+  --parch:#f6e9c8; --parch2:#e7d09a;
+  --ink:#3a2a14; --muted:#7a6542;
+  --ok:#2f8a46; --bad:#b33a36;
+  --house:#a87f2a; --house2:#e8c36a;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{
+  font-family:"Philosopher",Georgia,"Times New Roman",serif;
+  color:var(--ink);
+  background:
+    radial-gradient(1px 1px at 12% 18%,#fff8 50%,transparent 51%),
+    radial-gradient(1.5px 1.5px at 72% 12%,#fff9 50%,transparent 51%),
+    radial-gradient(1px 1px at 38% 64%,#fff6 50%,transparent 51%),
+    radial-gradient(1.5px 1.5px at 88% 52%,#fff8 50%,transparent 51%),
+    radial-gradient(1px 1px at 22% 86%,#fff7 50%,transparent 51%),
+    radial-gradient(1px 1px at 58% 34%,#fff6 50%,transparent 51%),
+    radial-gradient(1.5px 1.5px at 6% 48%,#fff7 50%,transparent 51%),
+    radial-gradient(ellipse at 50% 0%,var(--bg2),var(--bg) 70%);
+  background-color:var(--bg);
+  background-attachment:fixed;
+  font-size:20px;
+  line-height:1.4;
+}
+.leaves{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.leaves span{position:absolute;top:-40px;font-size:26px;opacity:.55;animation:fall linear infinite}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+#app{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:24px 16px 60px}
+h1,h2,h3{margin:.2em 0 .4em;line-height:1.15}
+h1{font-size:44px;color:var(--gold);text-align:center;text-shadow:0 2px 12px #000a}
+.sub{color:#d9cfae;text-align:center;margin-top:-6px}
+.card{
+  background:linear-gradient(180deg,var(--parch),var(--parch2));
+  border-radius:18px;padding:26px 28px;margin:18px 0;
+  box-shadow:0 10px 40px #0008, inset 0 0 0 3px #c9a85f, inset 0 0 0 7px var(--parch), inset 0 0 0 8px #c9a85f88;
+}
+.btn{
+  font:inherit;font-weight:700;font-size:22px;cursor:pointer;
+  border:none;border-radius:14px;padding:14px 26px;
+  background:linear-gradient(180deg,#f3d27e,#c99a36);color:#3a2507;
+  box-shadow:0 4px 0 #7d5a14,0 6px 14px #0005;
+  transition:transform .08s;
+}
+.btn:hover{filter:brightness(1.06)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #7d5a14}
+.btn.ghost{background:transparent;color:#d9cfae;box-shadow:none;border:2px solid #d9cfae66;font-size:16px;padding:8px 14px}
+.btn.house{background:linear-gradient(180deg,var(--house2),var(--house));color:#fff;text-shadow:0 1px 2px #0008;box-shadow:0 4px 0 #0006}
+.center{text-align:center}
+.row{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.banner{
+  display:flex;align-items:center;gap:16px;justify-content:center;
+  background:linear-gradient(90deg,var(--house),var(--house2),var(--house));
+  color:#fff;border-radius:14px;padding:10px 18px;text-shadow:0 1px 3px #000a;font-size:22px;font-weight:700;
+}
+.banner .em{font-size:38px}
+.foot{display:flex;justify-content:space-between;gap:10px;margin-top:20px;flex-wrap:wrap}
+.foot .btn.ghost{font-size:14px}
+
+/* setup */
+.pcgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.pcbtn{font:inherit;font-size:28px;font-weight:700;padding:18px 0;border-radius:14px;border:none;cursor:pointer;color:#fff;text-shadow:0 1px 3px #000a}
+
+/* level */
+.levels{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.level{font:inherit;cursor:pointer;border:3px solid #c9a85f;border-radius:16px;background:#fffaf0;padding:20px;text-align:center}
+.level:hover{background:#fff3d6}
+.level b{display:block;font-size:26px}
+.level .stars{font-size:34px}
+
+/* map */
+.trials{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.trial{
+  position:relative;font:inherit;cursor:pointer;text-align:center;
+  border:3px solid #c9a85f;border-radius:18px;background:#fffaf0;padding:22px 14px;
+}
+.trial:hover{background:#fff3d6;transform:translateY(-2px)}
+.trial .ic{font-size:56px;display:block}
+.trial b{font-size:24px;display:block}
+.trial small{color:var(--muted)}
+.trial.done{background:#e9f4e3;border-color:var(--ok);cursor:default;transform:none}
+.trial.done::after{
+  content:"✓";position:absolute;top:10px;right:12px;width:44px;height:44px;border-radius:50%;
+  background:var(--ok);color:#fff;font-size:28px;line-height:44px;transform:rotate(-12deg);
+}
+.progress{display:flex;gap:8px;justify-content:center;margin:6px 0 0}
+.progress i{width:44px;height:10px;border-radius:5px;background:#0003}
+.progress i.on{background:var(--ok)}
+
+/* runes */
+.rune{width:40px;height:60px;display:block;margin:0 auto}
+.rune path{stroke:currentColor;stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.msg{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;background:#2a1d0c;color:var(--gold);padding:18px;border-radius:14px}
+.msg .cell{display:flex;flex-direction:column;align-items:center;gap:6px}
+.msg .gap{width:26px}
+.msg input{
+  width:46px;height:52px;font:inherit;font-size:30px;font-weight:700;text-align:center;text-transform:uppercase;
+  border-radius:10px;border:2px solid #c9a85f;background:#fffaf0;color:var(--ink);
+}
+.msg input.ok{background:#d6f0d2;border-color:var(--ok)}
+.msg input.bad{background:#f8d6d4;border-color:var(--bad)}
+.key{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:8px;margin-top:16px}
+.key div{background:#fffaf0;border:2px solid #c9a85f;border-radius:10px;padding:6px;text-align:center;color:#2a1d0c}
+.key b{font-size:26px}
+
+/* quiz */
+.riddle{font-size:26px;text-align:center;background:#fffaf0;border-radius:14px;padding:18px;border:2px dashed #c9a85f}
+.opts{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:16px}
+.opt{font:inherit;font-size:22px;cursor:pointer;border:3px solid #c9a85f;border-radius:14px;background:#fffaf0;padding:14px;display:flex;align-items:center;gap:12px}
+.opt .e{font-size:40px}
+.opt:hover:not(:disabled){background:#fff3d6}
+.opt:disabled{opacity:.35;cursor:default}
+.opt.right{background:#d6f0d2;border-color:var(--ok);opacity:1}
+.shake{animation:shake .4s}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.note{text-align:center;min-height:30px;font-weight:700;margin-top:10px}
+.note.bad{color:var(--bad)} .note.ok{color:var(--ok)}
+.counter{text-align:center;color:var(--muted);margin-bottom:8px}
+
+/* spell book */
+.book{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.spell{background:#fffaf0;border:2px solid #c9a85f;border-radius:12px;padding:12px 14px;display:flex;gap:12px;align-items:center}
+.spell .e{font-size:38px}
+.spell b{font-size:24px;color:#5b2a86;display:block}
+
+/* memory */
+.mem{display:grid;gap:12px;margin:0 auto;max-width:620px}
+.mc{aspect-ratio:1;border-radius:14px;border:none;cursor:pointer;font-size:44px;
+  background:linear-gradient(135deg,#3b2a6b,#1c2456);color:transparent;box-shadow:inset 0 0 0 3px #c9a85f;position:relative}
+.mc::before{content:"✦";position:absolute;inset:0;display:grid;place-items:center;color:#c9a85f;font-size:30px}
+.mc.open,.mc.found{background:#fffaf0;color:inherit}
+.mc.open::before,.mc.found::before{content:none}
+.mc.found{box-shadow:inset 0 0 0 3px var(--ok);background:#e9f4e3}
+
+/* overlay */
+.overlay{position:fixed;inset:0;background:#0e1430e6;display:grid;place-items:center;z-index:10;padding:16px}
+.overlay .card{max-width:560px;text-align:center}
+.big{font-size:80px;line-height:1}
+.sparkle{animation:pop .6s ease-out}
+@keyframes pop{0%{transform:scale(.3);opacity:0}70%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+
+/* reward */
+.word{font-size:64px;font-weight:700;color:#5b2a86;text-align:center;padding:18px;border:4px double #c9a85f;border-radius:16px;background:#fffaf0;margin:12px 0}
+.line{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+.line span{min-width:110px;text-align:center;padding:10px 12px;border-radius:10px;border:2px dashed #c9a85f;background:#fffaf0;font-size:22px}
+.line span.me{border-style:solid;border-color:#5b2a86;background:#efe4fb;font-weight:700}
+.line span small{display:block;font-size:13px;color:var(--muted)}
+
+/* admin */
+.scores{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.score{border-radius:18px;padding:16px 10px;text-align:center;color:#fff;text-shadow:0 1px 3px #000a;position:relative}
+.score .em{font-size:52px}
+.score .n{font-size:72px;font-weight:700;line-height:1}
+.score .nm{font-size:22px;font-weight:700}
+.score .ctl{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.score .ctl button{font:inherit;font-weight:700;font-size:18px;border:none;border-radius:8px;padding:6px 10px;cursor:pointer;background:#fff;color:#222}
+.score.lead{outline:5px solid var(--gold);outline-offset:3px}
+.score.lead::before{content:"🏆";position:absolute;top:-26px;left:50%;transform:translateX(-50%);font-size:40px}
+table{border-collapse:collapse;width:100%}
+td,th{border-bottom:1px solid #c9a85f88;padding:6px 8px;text-align:left;font-size:18px}
+.poem{font-size:24px;text-align:center;line-height:1.6;font-style:italic}
+
+/* intro */
+.slide{min-height:70vh;display:flex;flex-direction:column;justify-content:center;text-align:center}
+.slide h2{font-size:52px;color:#5b2a86}
+.slide p{font-size:30px;margin:.4em 0}
+.slide .big{font-size:110px}
+.houses4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:10px}
+.houses4 div{border-radius:16px;padding:14px 8px;color:#fff;text-shadow:0 1px 3px #000a;font-size:22px}
+.houses4 .em{font-size:60px}
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:#d9cfae}
+
+@media (max-width:640px){
+  body{font-size:18px}
+  h1{font-size:32px}
+  .card{padding:18px 16px}
+  .trials,.levels,.opts,.book{grid-template-columns:1fr}
+  .scores,.houses4{grid-template-columns:1fr 1fr}
+  .word{font-size:44px}
+}
+</style>
+</head>
+<body>
+<div class="leaves" aria-hidden="true"></div>
+<div id="app"></div>
+
+<script>
+/* =====================================================================
+   НАСТРОЙКИ КВЕСТА — их можно менять
+   ===================================================================== */
+const CONFIG = {
+  // Какой компьютер к какому факультету относится
+  houses: [
+    { id:"g", name:"Гриффиндор", emoji:"🦁", c1:"#8f1d22", c2:"#d8a33a", trait:"храбрость",                pcs:[1,2,3,4] },
+    { id:"h", name:"Пуффендуй",  emoji:"🦡", c1:"#b5860f", c2:"#3a3a3a", trait:"трудолюбие и верность",    pcs:[5,6,7,8] },
+    { id:"r", name:"Когтевран",  emoji:"🦅", c1:"#1d377d", c2:"#b98c52", trait:"ум и любознательность",    pcs:[9,10,11,12] },
+    { id:"s", name:"Слизерин",   emoji:"🐍", c1:"#16603a", c2:"#9aa3ab", trait:"находчивость и упорство",  pcs:[13,14,15,16] },
+  ],
+  // Тайное слово каждого компьютера. Все 16 слов по порядку — стих-подсказка,
+  // где спрятан котёл. Каждый факультет собирает одну строку.
+  words: {
+    1:"Котёл",      2:"волшебный", 3:"ждёт вас",  4:"там,",
+    5:"где",        6:"куртки",    7:"висят",     8:"по крючкам.",
+    9:"Загляните",  10:"вниз,",    11:"среди",    12:"сапогов, —",
+    13:"найдёте",   14:"клад",     15:"для",      16:"знатоков!"
+  },
+  villain: "полтергейст Шнырь"
+};
+
+/* =====================================================================
+   ЗАДАНИЯ
+   ===================================================================== */
+const RUNE_YOUNG = ["СОВА","КОТ","ЛУНА","ПЕРО","МЕТЛА","ЖАБА","ШЛЯПА","МАГ","ФЕЯ","ЗЕЛЬЕ","ЗАМОК","ЛИСТ","ТЫКВА","СВЕЧА","КНИГА","ОСЕНЬ"];
+const RUNE_OLD = ["ВОЛШЕБНАЯ ПАЛОЧКА","СОВИНАЯ ПОЧТА","ЛУННЫЙ КАМЕНЬ","ЗОЛОТОЙ МЯЧ","КНИГА ЗАКЛИНАНИЙ","ПЛАЩ НЕВИДИМКА",
+  "КОТЕЛ С ЗЕЛЬЕМ","ДРАКОНЬЕ ЯЙЦО","ЛЕТАЮЩАЯ МЕТЛА","ГОВОРЯЩАЯ ШЛЯПА","ОСЕННИЙ ЛИСТОПАД","ХРУСТАЛЬНЫЙ ШАР",
+  "ПРОФЕССОР ЗЕЛИЙ","ТЫКВЕННЫЙ СОК","ЗВЕЗДНОЕ НЕБО","ВЕРНЫЙ ДРУГ"];
+
+const CREATURES = {
+  y: [
+    { q:"Днём спит, ночью летает, письма волшебникам приносит.", a:"Сова", e:"🦉" },
+    { q:"Огнём дышит, крыльями машет, золото стережёт.", a:"Дракон", e:"🐉" },
+    { q:"Белая лошадка с волшебным рогом на лбу.", a:"Единорог", e:"🦄" },
+    { q:"Мурлычет, мяукает, у ведьмы на плече сидит.", a:"Кот", e:"🐈" },
+    { q:"Восемь лап, плетёт паутину в тёмном углу.", a:"Паук", e:"🕷️" },
+    { q:"Висит вниз головой, ночью летает, пищит.", a:"Летучая мышь", e:"🦇" },
+    { q:"Зелёная, прыгает и квакает. Любимица юных волшебников.", a:"Жаба", e:"🐸" },
+    { q:"Шипит и ползает, а ног у неё нет.", a:"Змея", e:"🐍" },
+  ],
+  o: [
+    { q:"Сгорает в огне и рождается снова из пепла, а его слёзы лечат раны.", a:"Феникс", e:"🔥" },
+    { q:"Наполовину человек, наполовину конь. Читает судьбу по звёздам.", a:"Кентавр", e:"🐎" },
+    { q:"Огромный и неуклюжий, ходит с дубиной и туго соображает.", a:"Тролль", e:"👹" },
+    { q:"Наполовину орёл, наполовину конь. Поклонись ему первым — иначе обидится!", a:"Гиппогриф", e:"🦅" },
+    { q:"Живёт в озере, поёт под водой, а вместо ног у неё — хвост.", a:"Русалка", e:"🧜" },
+    { q:"Прозрачное, проходит сквозь стены и живёт в замке уже лет пятьсот.", a:"Привидение", e:"👻" },
+    { q:"Огромный пёс с тремя головами. Засыпает, если сыграть ему музыку.", a:"Трёхголовый пёс", e:"🐕" },
+    { q:"Маленький, с большими ушами, работает на кухне замка и мечтает о свободе.", a:"Домовой эльф", e:"🧝" },
+  ]
+};
+
+const SPELLS = [
+  { n:"Люмос",              e:"💡", d:"зажигает свет на кончике палочки" },
+  { n:"Нокс",               e:"🌑", d:"гасит свет на палочке" },
+  { n:"Акцио",              e:"🧲", d:"притягивает предмет к тебе" },
+  { n:"Вингардиум Левиоса", e:"🎈", d:"поднимает предмет в воздух" },
+  { n:"Алохомора",          e:"🔓", d:"открывает запертый замок" },
+  { n:"Репаро",             e:"🔧", d:"чинит сломанную вещь" },
+  { n:"Агуаменти",          e:"💧", d:"выпускает из палочки струю воды" },
+  { n:"Риддикулус",         e:"😂", d:"превращает страшное в смешное" },
+];
+
+const MEM_ICONS = ["🦉","🐉","🦄","🧙","🔮","🧹","🍄","🌙","⭐","📜","🎃","🕯️"];
+
+/* =====================================================================
+   ДВИЖОК
+   ===================================================================== */
+const $app = document.getElementById("app");
+const params = new URLSearchParams(location.search);
+
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} },
+  del(k){ try{ localStorage.removeItem(k); }catch(e){} }
+};
+function rng(seed){
+  return function(){
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+function shuffle(arr, r){ const a = arr.slice(); for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function pick(arr, n, r){ return shuffle(arr, r).slice(0, n); }
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function houseOf(pc){ return CONFIG.houses.find(h => h.pcs.includes(pc)) || CONFIG.houses[0]; }
+function setHouseColors(h){
+  document.documentElement.style.setProperty("--house", h ? h.c1 : "#a87f2a");
+  document.documentElement.style.setProperty("--house2", h ? h.c2 : "#e8c36a");
+}
+
+// Падающие листья
+(function(){
+  const box = document.querySelector(".leaves");
+  const leaves = ["🍂","🍁","🍂","🍁","🍃","🍂","🍁","🍂"];
+  leaves.forEach((l, i) => {
+    const s = document.createElement("span");
+    s.textContent = l;
+    s.style.left = (5 + i * 12 + Math.random() * 6) + "%";
+    s.style.animationDuration = (14 + Math.random() * 10) + "s";
+    s.style.animationDelay = (-Math.random() * 20) + "s";
+    box.appendChild(s);
+  });
+})();
+
+/* ---------- Руны: свой алфавит, нарисованный SVG ---------- */
+const ALPHA = "АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
+const RUNES = (function(){
+  const cand = [];
+  for(let r = 0; r < 4; r++) for(const side of [0, 2]) for(const dr of [-1, 0, 1]){
+    const r2 = r + dr; if(r2 < 0 || r2 > 3) continue;
+    cand.push([1, r, side, r2]);
+  }
+  const R = rng(7), used = new Set(), map = {};
+  for(const ch of ALPHA){
+    let segs, key;
+    do{
+      segs = pick(cand, R() < 0.35 ? 3 : 2, R);
+      key = segs.map(s => s.join("")).sort().join("|");
+    }while(used.has(key));
+    used.add(key); map[ch] = segs;
+  }
+  return map;
+})();
+function glyph(ch){
+  const s = RUNES[ch]; if(!s) return "";
+  const X = c => 6 + c * 14, Y = r => 6 + r * 16;
+  let d = `M${X(1)} ${Y(0)}L${X(1)} ${Y(3)}`;
+  for(const [c1, r1, c2, r2] of s) d += `M${X(c1)} ${Y(r1)}L${X(c2)} ${Y(r2)}`;
+  return `<svg class="rune" viewBox="0 0 40 60" aria-hidden="true"><path d="${d}"/></svg>`;
+}
+// Если на компьютере включена английская раскладка — переводим буквы
+const LAT2CYR = {q:"Й",w:"Ц",e:"У",r:"К",t:"Е",y:"Н",u:"Г",i:"Ш",o:"Щ",p:"З","[":"Х","]":"Ъ",a:"Ф",s:"Ы",d:"В",f:"А",g:"П",h:"Р",j:"О",k:"Л",l:"Д",";":"Ж","'":"Э",z:"Я",x:"Ч",c:"С",v:"М",b:"И",n:"Т",m:"Ь",",":"Б",".":"Ю","`":"Е"};
+function normLetter(ch){
+  if(!ch) return "";
+  const low = ch.toLowerCase();
+  if(LAT2CYR[low]) return LAT2CYR[low];
+  return ch.toUpperCase().replace("Ё", "Е");
+}
+
+/* =====================================================================
+   ЭКРАНЫ
+   ===================================================================== */
+let PC = parseInt(params.get("pc") || store.get("hq_pc", 0), 10) || 0;
+if(params.get("pc")) store.set("hq_pc", PC);
+
+function stateKey(){ return "hq_state_" + PC; }
+function loadState(){ return store.get(stateKey(), { level:null, done:{} }); }
+function saveState(st){ store.set(stateKey(), st); }
+
+function route(){
+  window.scrollTo(0, 0);
+  if(params.has("admin")) return screenAdmin();
+  if(params.has("intro")) return screenIntro();
+  if(!PC || PC < 1 || PC > 16) return screenSetup();
+  const st = loadState();
+  if(!st.level) return screenHome(st);
+  if(TRIALS.every(t => st.done[t.id])) return screenReward(st);
+  return screenMap(st);
+}
+
+/* ---------- Настройка компьютера (для взрослого) ---------- */
+function screenSetup(){
+  setHouseColors(null);
+  let btns = "";
+  for(let i = 1; i <= 16; i++){
+    const h = houseOf(i);
+    btns += `<button class="pcbtn" style="background:linear-gradient(180deg,${h.c2},${h.c1})" data-pc="${i}">${h.emoji} ${i}</button>`;
+  }
+  $app.innerHTML = `
+    <h1>🪄 Тайна Осеннего зелья</h1>
+    <p class="sub">Настройка компьютера (для взрослых)</p>
+    <div class="card">
+      <h2>Какой это компьютер?</h2>
+      <p>Нажмите номер этого компьютера. Номер запомнится, и при следующем открытии сайт сразу покажет задания.
+      Каждый компьютер выдаёт своё тайное слово.</p>
+      <div class="pcgrid">${btns}</div>
+      <p style="color:var(--muted);font-size:16px;margin-top:14px">
+        🦁 1–4 Гриффиндор · 🦡 5–8 Пуффендуй · 🦅 9–12 Когтевран · 🐍 13–16 Слизерин.<br>
+        Запасной компьютер: если какой-то сломался, выберите его номер.<br>
+        Номер можно передать и в адресе страницы: <code>index.html?pc=5</code>
+      </p>
+    </div>
+    <div class="row">
+      <a class="btn ghost" href="?admin">🏆 Экран ведущего</a>
+      <a class="btn ghost" href="?intro">🎬 Вступление для проектора</a>
+    </div>`;
+  $app.querySelectorAll("[data-pc]").forEach(b => b.onclick = () => {
+    PC = +b.dataset.pc; store.set("hq_pc", PC);
+    if(params.get("pc")) history.replaceState(null, "", location.pathname);
+    params.delete("pc");
+    route();
+  });
+}
+
+function footer(){
+  return `<div class="foot">
+    <button class="btn ghost" id="chgpc">⚙ Компьютер №${PC}</button>
+    <button class="btn ghost" id="restart">↺ Начать заново</button>
+  </div>`;
+}
+function bindFooter(){
+  const a = document.getElementById("chgpc"), b = document.getElementById("restart");
+  if(a) a.onclick = () => { if(confirm("Сменить номер компьютера? (Это для взрослых)")){ store.del("hq_pc"); PC = 0; route(); } };
+  if(b) b.onclick = () => { if(confirm("Начать квест заново на этом компьютере? Пройденные испытания сотрутся.")){ store.del(stateKey()); route(); } };
+}
+
+/* ---------- Приветствие и выбор уровня ---------- */
+function screenHome(st){
+  const h = houseOf(PC); setHouseColors(h);
+  $app.innerHTML = `
+    <h1>🪄 Тайна Осеннего зелья</h1>
+    <div class="banner"><span class="em">${h.emoji}</span> Факультет ${h.name}</div>
+    <div class="card">
+      <h2>📖 Говорящая Книга заклинаний</h2>
+      <p>Здравствуй, юный волшебник! Я — Говорящая Книга заклинаний.
+      Проказник <b>${CONFIG.villain}</b> заколдовал меня и спрятал котёл с Осенним зельем в Тайной комнате.</p>
+      <p>Пройди <b>4 испытания</b>, и я открою тебе <b>тайное слово</b>.
+      Собери слова вместе со своим факультетом — и вы узнаете, где искать котёл!</p>
+    </div>
+    <div class="card">
+      <h2 class="center">Кто сидит за компьютером?</h2>
+      <div class="levels">
+        <button class="level" data-l="y"><span class="stars">⭐</span><b>Первокурсник</b>7–8 лет<br>задания полегче</button>
+        <button class="level" data-l="o"><span class="stars">⭐⭐⭐</span><b>Старшекурсник</b>9–11 лет<br>задания посложнее</button>
+      </div>
+    </div>
+    ${footer()}`;
+  $app.querySelectorAll("[data-l]").forEach(b => b.onclick = () => { st.level = b.dataset.l; saveState(st); route(); });
+  bindFooter();
+}
+
+/* ---------- Карта испытаний ---------- */
+const TRIALS = [
+  { id:"runes",     ic:"📜", name:"Древние руны",        hint:"разгадай тайное послание",  run:trialRunes },
+  { id:"creatures", ic:"🐉", name:"Магические существа", hint:"отгадай загадки",           run:trialCreatures },
+  { id:"spells",    ic:"🪄", name:"Урок заклинаний",     hint:"выучи заклинания",          run:trialSpells },
+  { id:"memory",    ic:"⚗️", name:"Шкаф с зельями",      hint:"найди одинаковые пары",     run:trialMemory },
+];
+function screenMap(st){
+  const h = houseOf(PC); setHouseColors(h);
+  const doneN = TRIALS.filter(t => st.done[t.id]).length;
+  $app.innerHTML = `
+    <h1>🪄 Тайна Осеннего зелья</h1>
+    <div class="banner"><span class="em">${h.emoji}</span> Факультет ${h.name}</div>
+    <div class="card">
+      <h2 class="center">Испытания: ${doneN} из 4</h2>
+      <div class="progress">${TRIALS.map(t => `<i class="${st.done[t.id] ? "on" : ""}"></i>`).join("")}</div>
+      <p class="center">Выбери испытание. Проходить можно в любом порядке.</p>
+      <div class="trials">
+        ${TRIALS.map(t => `<button class="trial ${st.done[t.id] ? "done" : ""}" data-t="${t.id}">
+          <span class="ic">${t.ic}</span><b>${t.name}</b><small>${t.hint}</small></button>`).join("")}
+      </div>
+    </div>
+    ${footer()}`;
+  $app.querySelectorAll("[data-t]").forEach(b => b.onclick = () => {
+    if(st.done[b.dataset.t]) return;
+    const t = TRIALS.find(x => x.id === b.dataset.t);
+    window.scrollTo(0, 0);
+    t.run(st, () => complete(st, t.id));
+  });
+  bindFooter();
+}
+function trialShell(title, ic, body){
+  const h = houseOf(PC);
+  $app.innerHTML = `
+    <h1>${ic} ${title}</h1>
+    <div class="banner"><span class="em">${h.emoji}</span> Факультет ${h.name}</div>
+    <div class="card">${body}</div>
+    <div class="foot"><button class="btn ghost" id="back">← К испытаниям</button></div>`;
+  document.getElementById("back").onclick = route;
+}
+function complete(st, id){
+  st.done[id] = true; saveState(st);
+  const left = TRIALS.filter(t => !st.done[t.id]).length;
+  const ov = document.createElement("div");
+  ov.className = "overlay";
+  ov.innerHTML = `<div class="card sparkle">
+    <div class="big">✨🏅✨</div>
+    <h2>Испытание пройдено!</h2>
+    <p>${left ? `Осталось испытаний: <b>${left}</b>` : "Все испытания пройдены! Книга готова открыть тебе тайное слово…"}</p>
+    <button class="btn">${left ? "Дальше →" : "Узнать тайное слово 📖"}</button>
+  </div>`;
+  document.body.appendChild(ov);
+  ov.querySelector("button").onclick = () => { ov.remove(); route(); };
+}
+
+/* ---------- Испытание 1: руны ---------- */
+function trialRunes(st, done){
+  const pool = st.level === "y" ? RUNE_YOUNG : RUNE_OLD;
+  const word = pool[(PC * 5 + 3) % pool.length];
+  const letters = [...new Set(word.replace(/ /g, ""))];
+  const R = rng(PC * 31 + 7);
+  const decoys = pick(ALPHA.split("").filter(c => !letters.includes(c) && c !== "Ъ" && c !== "Ь"), st.level === "y" ? 4 : 6, R);
+  const table = shuffle(letters.concat(decoys), R);
+  let cells = "", idx = 0;
+  for(const ch of word){
+    if(ch === " "){ cells += `<span class="gap"></span>`; continue; }
+    cells += `<div class="cell">${glyph(ch)}<input data-i="${idx++}" maxlength="2" autocomplete="off" inputmode="text"></div>`;
+  }
+  const answer = word.replace(/ /g, "").split("");
+  trialShell("Древние руны", "📜", `
+    <p>Полтергейст оставил на стене послание древними рунами. Найди каждую руну в таблице
+    и напиши под ней букву.${st.level === "y" ? " Это одно слово." : " Это два слова."}</p>
+    <div class="msg">${cells}</div>
+    <h3 style="margin-top:18px">🔑 Таблица рун</h3>
+    <div class="key">${table.map(c => `<div>${glyph(c)}<b>${c}</b></div>`).join("")}</div>
+    <div class="note" id="note"></div>
+    <div class="center"><button class="btn" id="check">Проверить</button></div>`);
+  const inputs = [...$app.querySelectorAll(".msg input")];
+  inputs.forEach((inp, i) => {
+    inp.addEventListener("input", () => {
+      const v = inp.value; const ch = normLetter(v.slice(-1));
+      inp.value = ch; inp.classList.remove("ok", "bad");
+      if(ch && inputs[i + 1]) inputs[i + 1].focus();
+    });
+    inp.addEventListener("keydown", e => {
+      if(e.key === "Backspace" && !inp.value && inputs[i - 1]){ inputs[i - 1].focus(); }
+      if(e.key === "Enter") document.getElementById("check").click();
+    });
+  });
+  inputs[0].focus();
+  document.getElementById("check").onclick = () => {
+    let ok = 0, empty = 0;
+    inputs.forEach((inp, i) => {
+      inp.classList.remove("ok", "bad");
+      if(!inp.value){ empty++; return; }
+      if(inp.value === answer[i]){ inp.classList.add("ok"); ok++; } else inp.classList.add("bad");
+    });
+    const note = document.getElementById("note");
+    if(ok === answer.length){ note.className = "note ok"; note.textContent = "Верно! Послание разгадано!"; setTimeout(done, 700); }
+    else if(empty){ note.className = "note bad"; note.textContent = "Заполни все клеточки!"; }
+    else { note.className = "note bad"; note.textContent = "Красные буквы — неправильные. Посмотри на руны ещё раз!"; }
+  };
+}
+
+/* ---------- Испытание 2: магические существа ---------- */
+function trialCreatures(st, done){
+  const pool = CREATURES[st.level];
+  const R = rng(PC * 53 + (st.level === "y" ? 1 : 2));
+  const n = st.level === "y" ? 3 : 4;
+  const qs = pick(pool, n, R);
+  let k = 0;
+  function show(){
+    const q = qs[k];
+    const opts = shuffle([q].concat(pick(pool.filter(x => x !== q), 3, R)), R);
+    trialShell("Магические существа", "🐉", `
+      <div class="counter">Загадка ${k + 1} из ${n}</div>
+      <div class="riddle">${esc(q.q)}</div>
+      <div class="opts">${opts.map(o => `<button class="opt" data-a="${esc(o.a)}"><span class="e">${o.e}</span>${esc(o.a)}</button>`).join("")}</div>
+      <div class="note" id="note"></div>`);
+    $app.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+      const note = document.getElementById("note");
+      if(b.dataset.a === q.a){
+        b.classList.add("right");
+        $app.querySelectorAll(".opt").forEach(x => x.disabled = true);
+        note.className = "note ok"; note.textContent = "Правильно! ✨";
+        setTimeout(() => { k++; if(k < n) show(); else done(); }, 900);
+      } else {
+        b.disabled = true; b.classList.add("shake");
+        note.className = "note bad"; note.textContent = "Не он! Подумай ещё.";
+      }
+    });
+  }
+  show();
+}
+
+/* ---------- Испытание 3: заклинания ---------- */
+function trialSpells(st, done){
+  const young = st.level === "y";
+  const R = rng(PC * 71 + (young ? 1 : 2));
+  const book = pick(SPELLS, young ? 4 : 6, R);
+  const n = young ? 3 : 4;
+  let peeks = young ? Infinity : 1;
+  const qs = pick(book, n, R).map((s, i) => ({ s, dir: young ? 0 : i % 2 }));
+  const bookHtml = `<div class="book">${book.map(s => `<div class="spell"><span class="e">${s.e}</span><div><b>${s.n}</b>${s.d}</div></div>`).join("")}</div>`;
+
+  function showBook(first){
+    trialShell("Урок заклинаний", "🪄", `
+      <h2 class="center">📖 Учебник заклинаний</h2>
+      <p class="center">${first ? "Прочитай внимательно и запомни! Потом будет проверка." : "Подглядываем в учебник…"}
+      ${!young && first ? "<br><b>Старшекурсникам можно подсмотреть в учебник только 1 раз!</b>" : ""}</p>
+      ${bookHtml}
+      <p class="center" style="margin-top:14px">Возьми свою волшебную палочку и попробуй произнести каждое заклинание вслух! 🪄</p>
+      <div class="center"><button class="btn" id="go">${first ? "Я запомнил(а)! К проверке →" : "Вернуться к вопросу"}</button></div>`);
+    document.getElementById("go").onclick = () => quiz();
+  }
+  let k = 0;
+  function quiz(){
+    const { s, dir } = qs[k];
+    const others = pick(book.filter(x => x !== s), 3, R);
+    const opts = shuffle([s].concat(others), R);
+    const question = dir === 0
+      ? `Что делает заклинание <b>«${s.n}»</b>?`
+      : `Какое заклинание <b>${s.d}</b>?`;
+    trialShell("Урок заклинаний", "🪄", `
+      <div class="counter">Вопрос ${k + 1} из ${n}</div>
+      <div class="riddle">${question}</div>
+      <div class="opts">${opts.map(o => `<button class="opt" data-n="${esc(o.n)}"><span class="e">${o.e}</span>${dir === 0 ? esc(o.d) : esc(o.n)}</button>`).join("")}</div>
+      <div class="note" id="note"></div>
+      <div class="center">${peeks > 0 ? `<button class="btn ghost" style="color:var(--muted);border-color:#c9a85f" id="peek">📖 Подсмотреть в учебник${young ? "" : " (1 раз)"}</button>` : ""}</div>`);
+    const p = document.getElementById("peek");
+    if(p) p.onclick = () => { peeks--; showBook(false); };
+    $app.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+      const note = document.getElementById("note");
+      if(b.dataset.n === s.n){
+        b.classList.add("right");
+        $app.querySelectorAll(".opt").forEach(x => x.disabled = true);
+        note.className = "note ok"; note.textContent = `Верно! Взмахни палочкой и скажи: «${s.n}!»`;
+        setTimeout(() => { k++; if(k < n) quiz(); else done(); }, 1300);
+      } else {
+        b.disabled = true; b.classList.add("shake");
+        note.className = "note bad"; note.textContent = "Заклинание не сработало! Попробуй другое.";
+      }
+    });
+  }
+  showBook(true);
+}
+
+/* ---------- Испытание 4: память ---------- */
+function trialMemory(st, done){
+  const young = st.level === "y";
+  const pairs = young ? 6 : 8;
+  const R = rng(PC * 97 + (young ? 1 : 2));
+  const icons = pick(MEM_ICONS, pairs, R);
+  const deck = shuffle(icons.concat(icons), R);
+  const cols = young ? 4 : 4;
+  trialShell("Шкаф с зельями", "⚗️", `
+    <p class="center">Полтергейст перемешал все склянки в шкафу! Открывай по две карточки и найди все одинаковые пары.</p>
+    <div class="counter" id="cnt">Найдено пар: 0 из ${pairs}</div>
+    <div class="mem" style="grid-template-columns:repeat(${cols},1fr)">
+      ${deck.map((ic, i) => `<button class="mc" data-i="${i}">${ic}</button>`).join("")}
+    </div>`);
+  const cards = [...$app.querySelectorAll(".mc")];
+  let open = [], found = 0, lock = false;
+  cards.forEach(c => c.onclick = () => {
+    if(lock || c.classList.contains("open") || c.classList.contains("found")) return;
+    c.classList.add("open"); open.push(c);
+    if(open.length === 2){
+      lock = true;
+      const [a, b] = open;
+      if(deck[a.dataset.i] === deck[b.dataset.i]){
+        setTimeout(() => {
+          a.classList.replace("open", "found"); b.classList.replace("open", "found");
+          open = []; lock = false; found++;
+          document.getElementById("cnt").textContent = `Найдено пар: ${found} из ${pairs}`;
+          if(found === pairs) setTimeout(done, 500);
+        }, 350);
+      } else {
+        setTimeout(() => { a.classList.remove("open"); b.classList.remove("open"); open = []; lock = false; }, 900);
+      }
+    }
+  });
+}
+
+/* ---------- Награда: тайное слово ---------- */
+function screenReward(st){
+  const h = houseOf(PC); setHouseColors(h);
+  const pos = h.pcs.indexOf(PC) + 1;
+  $app.innerHTML = `
+    <h1>📖 Тайное слово</h1>
+    <div class="banner"><span class="em">${h.emoji}</span> Факультет ${h.name}</div>
+    <div class="card center sparkle">
+      <p>Ты прошёл все 4 испытания! Чары полтергейста рассеялись, и Книга шепчет тебе тайное слово:</p>
+      <div class="word">«${esc(CONFIG.words[PC])}»</div>
+      <p><b>Это слово №${PC} из 16.</b> Запиши его на пергамент своего факультета в клеточку <b>№${PC}</b>.</p>
+      <p>Твоя строчка стиха — вместе с компьютерами твоего факультета:</p>
+      <div class="line">
+        ${h.pcs.map(p => `<span class="${p === PC ? "me" : ""}"><small>№${p}</small>${p === PC ? esc(CONFIG.words[p]) : "?"}</span>`).join("")}
+      </div>
+      <p>Узнай у друзей с других компьютеров их слова. Когда все 4 факультета сложат свои строчки,
+      получится стих — он подскажет, <b>где спрятан котёл с Осенним зельем!</b> 🧪</p>
+      <p style="color:var(--muted)">Подними руку и покажи экран профессору 🙋</p>
+    </div>
+    ${footer()}`;
+  bindFooter();
+}
+
+/* ---------- Экран ведущего: баллы факультетов ---------- */
+function screenAdmin(){
+  setHouseColors(null);
+  const scores = store.get("hq_scores", { g:0, h:0, r:0, s:0 });
+  const max = Math.max(...Object.values(scores));
+  const lines = CONFIG.houses.map(h => h.pcs.map(p => CONFIG.words[p]).join(" "));
+  $app.innerHTML = `
+    <h1>🏆 Кубок факультетов</h1>
+    <div class="scores">
+      ${CONFIG.houses.map(h => `
+        <div class="score ${max > 0 && scores[h.id] === max ? "lead" : ""}" style="background:linear-gradient(180deg,${h.c2},${h.c1})">
+          <div class="em">${h.emoji}</div><div class="nm">${h.name}</div>
+          <div class="n">${scores[h.id]}</div>
+          <div class="ctl">
+            <button data-h="${h.id}" data-v="1">+1</button><button data-h="${h.id}" data-v="5">+5</button>
+            <button data-h="${h.id}" data-v="10">+10</button><button data-h="${h.id}" data-v="-1">−1</button>
+          </div>
+        </div>`).join("")}
+    </div>
+    <details class="card" style="margin-top:28px">
+      <summary style="cursor:pointer;font-weight:700;font-size:22px">🔒 Для ведущего: разгадка, слова и настройки</summary>
+      <h3 style="margin-top:16px">Стих-подсказка целиком</h3>
+      <div class="poem">${lines.map(esc).join("<br>")}</div>
+      <h3>Какой компьютер какое слово выдаёт</h3>
+      <table><tr><th>Компьютер</th><th>Факультет</th><th>Слово</th><th>Ссылка</th></tr>
+        ${Object.keys(CONFIG.words).map(p => { const h = houseOf(+p); return `<tr><td>№${p}</td><td>${h.emoji} ${h.name}</td><td><b>${esc(CONFIG.words[p])}</b></td><td><code>?pc=${p}</code></td></tr>`; }).join("")}
+      </table>
+      <p style="margin-top:14px">Слова и всё остальное меняются в начале файла <code>index.html</code>, в блоке <code>CONFIG</code>.</p>
+      <div class="row" style="margin-top:10px">
+        <button class="btn" id="reset">Обнулить баллы</button>
+        <a class="btn" href="?intro">🎬 Вступление</a>
+        <a class="btn" href="./">⚙ Настройка компьютера</a>
+      </div>
+    </details>`;
+  $app.querySelectorAll("[data-h]").forEach(b => b.onclick = () => {
+    scores[b.dataset.h] = Math.max(0, scores[b.dataset.h] + +b.dataset.v);
+    store.set("hq_scores", scores); screenAdmin();
+  });
+  document.getElementById("reset").onclick = () => { if(confirm("Обнулить все баллы?")){ store.set("hq_scores", { g:0, h:0, r:0, s:0 }); screenAdmin(); } };
+}
+
+/* ---------- Вступление для проектора ---------- */
+function screenIntro(){
+  setHouseColors(null);
+  const H = CONFIG.houses;
+  const slides = [
+    `<div class="big">🏰</div><h2>Добро пожаловать в Хогвартс!</h2><p>Сегодня вы — ученики школы волшебников</p>`,
+    `<div class="big">🧙</div><h2>Что такое Хогвартс?</h2>
+     <p>Это старинный замок, где дети учатся магии:</p>
+     <p>варят зелья 🧪, учат заклинания 🪄,<br>летают на мётлах 🧹 и ухаживают за волшебными существами 🐉</p>`,
+    `<h2>Четыре факультета</h2>
+     <p>Каждый ученик попадает в один из факультетов — это его команда</p>
+     <div class="houses4">${H.map(h => `<div style="background:linear-gradient(180deg,${h.c2},${h.c1})"><div class="em">${h.emoji}</div><b>${h.name}</b><br><small>${h.trait}</small></div>`).join("")}</div>
+     <p style="font-size:24px;margin-top:14px">Факультет выбирает <b>Распределяющая шляпа</b> 🎩</p>`,
+    `<div class="big">👻</div><h2>Беда!</h2>
+     <p>Проказник <b>${CONFIG.villain}</b> украл ингредиенты для Осеннего зелья</p>
+     <p>и спрятал котёл в <b>Тайной комнате</b>!</p>`,
+    `<div class="big">🗺️</div><h2>Ваше задание</h2>
+     <p>🪄 Сделать волшебные палочки</p>
+     <p>⚗️ Пройти испытания у профессоров и у Говорящей Книги</p>
+     <p>📜 Собрать ингредиенты и тайные слова</p>
+     <p>🧪 Найти Тайную комнату и сварить зелье!</p>`,
+    `<div class="big">✨</div><h2>Да начнётся магия!</h2><p>Палочки — наголо!</p>`
+  ];
+  let i = 0;
+  function show(){
+    $app.innerHTML = `<div class="card slide sparkle">${slides[i]}</div>
+      <div class="nav"><button class="btn ghost" id="prev">← Назад</button><span>${i + 1} / ${slides.length}</span><button class="btn ghost" id="next">Дальше →</button></div>`;
+    document.getElementById("prev").onclick = () => { if(i > 0){ i--; show(); } };
+    document.getElementById("next").onclick = () => { if(i < slides.length - 1){ i++; show(); } };
+  }
+  document.onkeydown = e => {
+    if(["ArrowRight"," ","PageDown","Enter"].includes(e.key) && i < slides.length - 1){ i++; show(); e.preventDefault(); }
+    if(["ArrowLeft","PageUp"].includes(e.key) && i > 0){ i--; show(); }
+  };
+  show();
+}
+
+route();
+</script>
+</body>
+</html>
