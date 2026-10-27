@@ -117,8 +117,8 @@ h1{font-size:clamp(30px,5vw,52px);color:var(--gold);margin:0 0 6px;text-shadow:0
    «/» — пробел между словами. Нечётные клетки добывает Гриффиндор,
    чётные — Слизерин.
    ===================================================================== */
-const CODE = "0J4g0KEg0JUg0J0g0KwgLyDQryDQkiDQmCDQoSDQrA==";   // зашифровано, чтобы дети не подсмотрели
-const SPELL_TEXT = "Осень, явись!";
+const CODE = "0J4g0KIg0Jog0KAg0J4g0Jkg0KEg0K8=";   // зашифровано, чтобы дети не подсмотрели
+const SPELL_TEXT = "Сундук, откройся!";
 
 /* ===================================================================== */
 const letters = new TextDecoder().decode(Uint8Array.from(atob(CODE), c => c.charCodeAt(0))).split(" ").filter(Boolean);
